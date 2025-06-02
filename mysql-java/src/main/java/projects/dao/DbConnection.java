@@ -8,7 +8,7 @@ import projects.exception.DbException;
 
 public class DbConnection {
     private static final String HOST = "localhost";
-    private static final String PASSWORD = "Thundercloud25@"; // Replace with actual password
+    private static final String PASSWORD = "Thundercloud25@"; 
     private static final int PORT = 3306;
     private static final String SCHEMA = "projects";
     private static final String USER = "projects";
