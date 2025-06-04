@@ -8,13 +8,14 @@ import projects.exception.DbException;
 
 public class DbConnection {
     private static final String HOST = "localhost";
-    private static final String PASSWORD = "Thundercloud25@"; // Replace with actual password
+    private static final String PASSWORD = "thundercloud25@"; 
     private static final int PORT = 3306;
     private static final String SCHEMA = "projects";
     private static final String USER = "projects";
 
     public static Connection getConnection() {
-        String uri = String.format("jdbc:mysql://%s:%d/%s?user=%s&password=%s",
+       
+        String uri = String.format("jdbc:mysql://%s:%d/%s?user=%s&password=%s&allowPublicKeyRetrieval=true&useSSL=false",
                 HOST, PORT, SCHEMA, USER, PASSWORD);
 
         try {
@@ -27,4 +28,5 @@ public class DbConnection {
         }
     }
 }
+
 
