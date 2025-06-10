@@ -58,4 +58,16 @@ public class Project {
     public void setNotes(String notes) {
         this.notes = notes;
     }
-}
+    @Override
+    public String toString() {
+        return "\nID = " + projectId +
+               "\nName = " + projectName +
+               "\nEstimated Hours = " + estimatedHours +
+               "\nActual Hours = " + actualHours +
+               "\nDifficulty = " + difficulty +
+               "\nNotes = " + notes +
+               "\nMaterials: " + "\nSteps: " + "\nCategories:";
+    }
+
+    }
+

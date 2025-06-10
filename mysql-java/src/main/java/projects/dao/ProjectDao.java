@@ -3,33 +3,57 @@ package projects.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.math.BigDecimal;
 
-import projects.exception.DbException;
 import projects.entity.Project;
-import projects.util.DbConnection;
+import projects.exception.DbException;
+import provided.util.DaoBase;
 
-public class ProjectDao {
+public class ProjectDao extends DaoBase {
 
-    private static final String INSERT_PROJECT_SQL = 
-        "INSERT INTO project (project_name, estimated_hours, actual_hours, difficulty, notes) " +
-        "VALUES (?, ?, ?, ?, ?)";
+   
+    private static final String CATEGORY_TABLE = "category";
+    private static final String MATERIAL_TABLE = "material";
+    private static final String PROJECT_TABLE = "project";
+    private static final String PROJECT_CATEGORY_TABLE = "project_category";
+    private static final String STEP_TABLE = "step";
 
     public Project insertProject(Project project) {
-        try (Connection conn = DbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(INSERT_PROJECT_SQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        // SQL string fix: remove broken concatenation and use proper quotes
+        String sql = ""
+            + "INSERT INTO " + PROJECT_TABLE + " "
+            + "(project_name, estimated_hours, actual_hours, difficulty, notes) "
+            + "VALUES (?, ?, ?, ?, ?)";
 
-            stmt.setString(1, project.getProjectName());
-            stmt.setBigDecimal(2, project.getEstimatedHours());
-            stmt.setBigDecimal(3, project.getActualHours());
-            stmt.setInt(4, project.getDifficulty());
-            stmt.setString(5, project.getNotes());
+        try (Connection conn = DbConnection.getConnection()) {
+            startTransaction(conn); // fix: method name is startTransaction, not starttransaction
 
-            stmt.executeUpdate();
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                // Set parameters
+                setParameter(stmt, 1, project.getProjectName(), String.class);
+                setParameter(stmt, 2, project.getEstimatedHours(), BigDecimal.class);
+                setParameter(stmt, 3, project.getActualHours(), BigDecimal.class);
+                setParameter(stmt, 4, project.getDifficulty(), Integer.class);
+                setParameter(stmt, 5, project.getNotes(), String.class);
 
-            return project;
+                stmt.executeUpdate();
+
+                // Retrieve auto-generated project ID
+                Integer projectId = getLastInsertId(conn, PROJECT_TABLE);
+                commitTransaction(conn);
+
+                project.setProjectId(projectId); // fix method name to camelCase
+                return project;
+
+                
+            } catch (Exception e) {
+                rollbackTransaction(conn);
+                throw new DbException(e);
+            }
 
         } catch (SQLException e) {
             throw new DbException(e);
         }
     }
 }
+
