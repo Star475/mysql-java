@@ -8,11 +8,7 @@ import projects.exception.DbException;
 
 public class DbConnection {
     private static final String HOST = "localhost";
-<<<<<<< HEAD
     private static final String PASSWORD = "thundercloud25@"; 
-=======
-    private static final String PASSWORD = "thundercloud25@"; 
->>>>>>> fdfa9f630bdab72bad3172ae58f3a2137dd22da6
     private static final int PORT = 3306;
     private static final String SCHEMA = "projects";
     private static final String USER = "projects";
@@ -24,7 +20,7 @@ public class DbConnection {
 
         try {
             Connection conn = DriverManager.getConnection(uri);
-            System.out.println("Connection to database successful!");
+            //System.out.println("Connection to database successful!");
             return conn;
         } catch (SQLException e) {
             System.out.println("Failed to connect to the database.");
