@@ -13,7 +13,7 @@ import projects.service.ProjectService;
 
 public class Menu {
 
-    private static Project curProject;  // Instance variable for selected project
+    private static Project curProject;  
     private static ProjectService projectService = new ProjectService();
 
     private static void printOperations() {

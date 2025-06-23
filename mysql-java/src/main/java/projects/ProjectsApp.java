@@ -18,7 +18,9 @@ public class ProjectsApp {
   private List<String> operations = List.of(
     "1) Add a project",
     "2) List projects",
-    "3) Select a project"
+    "3) Select a project",
+    "4) Update project details",
+    "5) Delete a project"
   );
   //@formatter:on
 
@@ -49,17 +51,82 @@ public class ProjectsApp {
           case 3:
             selectProject();
             break;
-
+            
+          case 4:
+            updateProjectDetails();  
+            break;
+            
+          case 5:
+            deleteProject();  
+            break;
+            
           default:
             System.out.println("\n" + selection + " is not a valid selection. Try again.");
             break;
         }
       } catch (Exception e) {
         System.out.println("\nError: " + e  + ". Try again.");
-       // e.printStackTrace(); // Helpful for debugging
+      
       }
     }
   }
+
+  private void deleteProject() {
+    listProjects();
+    Integer projectId = getIntInput("Enter the ID of the project to delete");
+    projectService.deleteProject(projectId);
+    System.out.println("Project " + projectId + " was deleted successfully.");
+    if(Objects.nonNull(curProject) && curProject.getProjectId().equals(projectId)) {
+      curProject = null;
+    }
+     
+    
+  }
+
+  private void updateProjectDetails() {
+    if (Objects.isNull(curProject)) {
+      System.out.println("\nPlease select a project.");
+      return;
+  }
+    Scanner scanner = new Scanner(System.in);
+
+    System.out.print("Enter the project name [" + curProject.getProjectName() + "]: ");
+    String name = scanner.nextLine();
+
+    System.out.print("Enter the estimated hours [" + curProject.getEstimatedHours() + "]: ");
+    String estHours = scanner.nextLine();
+
+    System.out.print("Enter the actual hours [" + curProject.getActualHours() + "]: ");
+    String actHours = scanner.nextLine();
+
+    System.out.print("Enter the project difficulty (1-5) [" + curProject.getDifficulty() + "]: ");
+    String difficulty = scanner.nextLine();
+
+    System.out.print("Enter project notes [" + curProject.getNotes() + "]: ");
+    String notes = scanner.nextLine();
+
+    Project project = new Project();
+  
+ // Use new input if available, otherwise use existing value
+ project.setProjectName(name.isBlank() ? curProject.getProjectName() : name);
+ project.setEstimatedHours(estHours.isBlank() ? curProject.getEstimatedHours()
+     : new BigDecimal(estHours));
+ project.setActualHours(actHours.isBlank() ? curProject.getActualHours()
+     : new BigDecimal(actHours));
+ project.setDifficulty(difficulty.isBlank() ? curProject.getDifficulty()
+     : Integer.parseInt(difficulty));
+ project.setNotes(notes.isBlank() ? curProject.getNotes() : notes);
+
+ // Set the ID so it knows which row to update
+ project.setProjectId(curProject.getProjectId());
+
+ projectService.modifyProjectDetails(project);
+ 
+ curProject = projectService.fetchProjectById(curProject.getProjectId());
+
+
+ }
+  
 
   private void createProject() {
     String projectName = getStringInput("Enter the project name");
@@ -130,13 +197,13 @@ public class ProjectsApp {
             material.getCost() == null ? "null" : material.getCost()))  // Handle null cost
     );
 
-    // Print Steps with precise formatting
+   
     System.out.println("Steps: ");
     project.getSteps().forEach(step ->
         System.out.println(String.format("  ID=%d, stepText=%s", step.getStepId(), step.getStepText()))
     );
 
-    // Print Categories with precise formatting
+   
     System.out.println("Categories: ");
     project.getCategories().forEach(category ->
         System.out.println(String.format("  ID=%d, categoryName=%s", category.getCategoryId(), category.getCategoryName()))
